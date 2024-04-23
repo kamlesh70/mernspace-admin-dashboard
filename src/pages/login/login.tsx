@@ -1,0 +1,85 @@
+import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Alert, Button, Card, Form, FormProps, Input, Layout, Space } from "antd";
+import { useMutation } from "@tanstack/react-query";
+
+import { LoginFieldType } from "../../types";
+import { login } from "../../http/api/auth.api";
+
+const LoginPage = () => {
+  
+  const loginHandler =  async (data: LoginFieldType) => {
+    console.log(data);
+    return login(data);
+  }
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: loginHandler,
+  })
+
+  const onFinish: FormProps<LoginFieldType>['onFinish'] = (values) => {
+    console.log('Success:', values);
+    mutate(values);
+  };
+
+  return (
+    <Layout
+      style={{
+        display: "grid",
+        placeItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Card
+        title={
+          <Space
+            style={{
+              width: "100%",
+              fontSize: 16,
+              justifyContent: "center",
+            }}
+          >
+            <LockFilled />
+            Sign In
+          </Space>
+        }
+        bordered={false}
+        style={{
+          width: "22rem",
+          justifyContent: "center",
+        }}
+      >
+        <Form
+          onFinish={onFinish}
+        > 
+        {
+          isError && 
+          <Alert style={{ marginBottom: '20px' }} type="error" message={error.message || "failed to login"}/>
+        }
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Please enter email!", type: 'email' }]}
+          >
+            <Input prefix={<UserOutlined />} placeholder="User Email" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+          </Form.Item>
+          <Form.Item style={{ marginBottom: "10px" }}>
+            <a href="#">Forgot password</a>
+          </Form.Item>
+          <Form.Item>
+            <Button loading={isPending} type="primary" htmlType="submit" style={{ width: "100%" }}>
+              Login
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    </Layout>
+  );
+};
+
+export default LoginPage;

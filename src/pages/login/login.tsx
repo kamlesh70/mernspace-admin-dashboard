@@ -1,21 +1,42 @@
 import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Alert, Button, Card, Form, FormProps, Input, Layout, Space } from "antd";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { LoginFieldType } from "../../types";
-import { login } from "../../http/api/auth.api";
+import { login, self } from "../../http/api/auth.api";
+import { useAuthStore } from "../../zustand/store";
 
 const LoginPage = () => {
+
+  const { setUser } = useAuthStore();
   
-  const loginHandler =  async (data: LoginFieldType) => {
-    console.log(data);
-    return login(data);
+  const getSelf = async () => {
+    const { data } = await self();
+    console.log(data, "data   dddddddddddd");
+    return data;
+  }
+
+  const { data: userData, refetch } = useQuery({
+    queryKey: ['self'],
+    queryFn: getSelf,
+    enabled: false,
+    
+  })
+
+  const loginHandler =  async (credentials: LoginFieldType) => {
+    const { data } = await login(credentials);
+    return data;
   }
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"],
     mutationFn: loginHandler,
+    onSuccess: async () => {
+      const selfData = await refetch();
+      setUser(selfData.data);
+    }
   })
+  console.log(userData);
 
   const onFinish: FormProps<LoginFieldType>['onFinish'] = (values) => {
     console.log('Success:', values);

@@ -3,20 +3,23 @@ import { Alert, Button, Card, Form, FormProps, Input, Layout, Space } from "antd
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { LoginFieldType } from "../../types";
-import { login, self } from "../../http/api/auth.api";
+import { login, logout, self } from "../../http/api/auth.api";
 import { useAuthStore } from "../../zustand/store";
+import useHasPermission from "../../hooks/useHasPermission";
+import { enqueueSnackbar } from "notistack";
 
 const LoginPage = () => {
 
-  const { setUser } = useAuthStore();
-  
+  const { setUser, logout: logoutStore } = useAuthStore();
+  const { isAllowed } = useHasPermission();
+
   const getSelf = async () => {
     const { data } = await self();
     console.log(data, "data   dddddddddddd");
     return data;
   }
 
-  const { data: userData, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['self'],
     queryFn: getSelf,
     enabled: false,
@@ -34,9 +37,13 @@ const LoginPage = () => {
     onSuccess: async () => {
       const selfData = await refetch();
       setUser(selfData.data);
+      if(!isAllowed(selfData.data)){
+        await logout();
+        logoutStore();
+        enqueueSnackbar("Invalid credentials !", { variant: "error" });
+      }
     }
   })
-  console.log(userData);
 
   const onFinish: FormProps<LoginFieldType>['onFinish'] = (values) => {
     console.log('Success:', values);

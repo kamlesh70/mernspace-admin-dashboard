@@ -23,7 +23,7 @@ const LoginPage = () => {
     queryKey: ['self'],
     queryFn: getSelf,
     enabled: false,
-    
+    retry: false, 
   })
 
   const loginHandler =  async (credentials: LoginFieldType) => {
@@ -34,6 +34,7 @@ const LoginPage = () => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"],
     mutationFn: loginHandler,
+    retry: false, 
     onSuccess: async () => {
       const selfData = await refetch();
       setUser(selfData.data);

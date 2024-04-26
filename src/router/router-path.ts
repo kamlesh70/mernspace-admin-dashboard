@@ -1,8 +1,12 @@
 export const DASHBOARD_PATH = '/dashboard'; 
 
 export const APP_PATHS = { 
+    root: '/',
     login: {
         root: '/login'
+    },
+    dashboard: {
+        root: '/dashboard'
     },
     user: {
         root: '/user',

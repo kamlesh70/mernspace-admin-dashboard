@@ -8,10 +8,13 @@ export const APP_PATHS = {
     dashboard: {
         root: '/dashboard'
     },
-    user: {
-        root: '/user',
+    users: {
+        root: '/users',
         list: '/user/list',
         create: '/user/create',
         edit: '/user/edit'
+    },
+    products: {
+        root: '/products'
     }
 }

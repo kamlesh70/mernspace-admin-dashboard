@@ -31,7 +31,7 @@ const LoginPage = () => {
     return data;
   }
 
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, isPending, isError, error }: any = useMutation({
     mutationKey: ["login"],
     mutationFn: loginHandler,
     retry: false, 
@@ -45,6 +45,9 @@ const LoginPage = () => {
       }
     }
   })
+
+
+  console.log("errorrrrrrrrrrrrr", error);
 
   const onFinish: FormProps<LoginFieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
@@ -83,7 +86,9 @@ const LoginPage = () => {
         > 
         {
           isError && 
-          <Alert style={{ marginBottom: '20px' }} type="error" message={error.message || "failed to login"}/>
+          <Alert style={{ marginBottom: '20px' }} type="error" 
+            message={error?.response?.data?.errors[0]?.msg || "failed to login"}
+          />
         }
           <Form.Item
             name="email"

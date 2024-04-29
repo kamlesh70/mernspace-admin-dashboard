@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "../config";
+import { useAuthStore } from "../zustand/store";
 
 const apiClient = axios.create({
     baseURL: config.BACKEND_BASE_URL,
@@ -29,6 +30,7 @@ apiClient.interceptors.response.use((response) => response,
             }
         } catch (error) {
             console.error(error);
+            useAuthStore.getState().logout();
             return Promise.reject(error);
         }
     }

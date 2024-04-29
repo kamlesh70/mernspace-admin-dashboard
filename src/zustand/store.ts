@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { devtools } from 'zustand/middleware'
+import { APP_PATHS } from "../router/router-path";
 
 export interface User {
     email: string;
@@ -27,6 +28,11 @@ export const useAuthStore = create<AuthStore>()(
                 role: user.role
             }
          }),
-        logout: () => set({ user: null })
+        logout: () => {
+            set({ user: null });
+            if(window.location.pathname !== '/login'){
+                window.location.href = APP_PATHS.login.root
+            }
+        }
     }))
 )

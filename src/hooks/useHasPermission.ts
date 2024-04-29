@@ -1,4 +1,4 @@
-import { Roles } from "../types";
+import { Roles } from "../constants";
 
 const useHasPermission = () => {
     const allowedRoles = [Roles.ADMIN, Roles.MANAGER];

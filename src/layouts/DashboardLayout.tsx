@@ -1,11 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAuthStore } from "../zustand/store";
-import { isEmpty } from "lodash";
-import { APP_PATHS } from "../router/router-path";
 import { Button, Layout, Menu, theme } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import navConfig from "./nev-item";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import AccountPopup from "../components/AccountPopup";
 
 const { Sider, Header, Content } = Layout
 
@@ -14,14 +13,13 @@ const DashboardLayout = () => {
     const { user } = useAuthStore();
     const [collapsed, setCollapsed] = useState(false);
     const {
-      token: { colorBgContainer, borderRadiusLG },
+      token: { colorBgContainer },
     } = theme.useToken();
 
-    if(isEmpty(user)) {
-        return (
-            <Navigate to={APP_PATHS.login.root} replace={true}/>
-        )
-    }
+    const navbarConfig = useMemo(() => {
+      const config = navConfig.filter((nav) => nav.allowedRoles.includes(user?.role as string));
+      return config;
+    }, [user]);
 
     return (
         <Layout style={{ height: '100vh' }} >
@@ -31,11 +29,11 @@ const DashboardLayout = () => {
             theme="dark"
             mode="inline"
             defaultSelectedKeys={['/']}
-            items={navConfig}
+            items={navbarConfig}
           />
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'space-between' }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -46,14 +44,9 @@ const DashboardLayout = () => {
                 height: 64,
               }}
             />
+            <AccountPopup />
           </Header>
           <Content
-            style={{
-              margin: '24px 16px',
-              padding: 24,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
           >
             <Outlet />
           </Content>

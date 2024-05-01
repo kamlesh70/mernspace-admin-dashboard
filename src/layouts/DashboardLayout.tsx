@@ -17,7 +17,7 @@ const DashboardLayout = () => {
     } = theme.useToken();
 
     const navbarConfig = useMemo(() => {
-      const config = navConfig.filter((nav) => nav.allowedRoles.includes(user?.role as string));
+      const config = navConfig.filter((nav) => nav.allowed.includes(user?.role as string));
       return config;
     }, [user]);
 

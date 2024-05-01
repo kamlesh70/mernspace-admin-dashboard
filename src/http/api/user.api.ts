@@ -1,3 +1,3 @@
-import apiClient from "../client";
+import apiClient from '../client';
 
 export const getUsersList = () => apiClient.get('/user/list');

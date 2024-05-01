@@ -1,30 +1,37 @@
-import { Button, Col, Drawer, Form, Input, Row, Select, Space, theme } from 'antd';
+import {
+  Button,
+  Col,
+  Drawer,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  theme,
+} from 'antd';
 import { Roles } from '../../constants';
 
 type Props = {
   open: boolean;
   setOpen: (value: boolean) => void;
-}
+};
 
 const RoleOptions = [
   {
     label: 'Admin',
-    value: Roles.ADMIN
+    value: Roles.ADMIN,
   },
   {
     label: 'Manager',
-    value: Roles.MANAGER
+    value: Roles.MANAGER,
   },
   {
     label: 'Customer',
-    value: Roles.CUSTOMER
-  }
-]
+    value: Roles.CUSTOMER,
+  },
+];
 
-
-const CreateUser = (
-  { open, setOpen }: Props
-) => {
+const CreateUser = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
 
   const {
@@ -37,8 +44,8 @@ const CreateUser = (
   };
 
   const onFinish = (data: any) => {
-    console.log(data)
-  }
+    console.log(data);
+  };
 
   return (
     <>
@@ -56,7 +63,7 @@ const CreateUser = (
         extra={
           <Space>
             <Button onClick={onClose}>Cancel</Button>
-            <Button type="primary" htmlType='submit'>
+            <Button type="primary" htmlType="submit">
               Submit
             </Button>
           </Space>
@@ -68,7 +75,9 @@ const CreateUser = (
               <Form.Item
                 name="firstName"
                 label="First Name"
-                rules={[{ required: true, message: 'Please enter user first name' }]}
+                rules={[
+                  { required: true, message: 'Please enter user first name' },
+                ]}
               >
                 <Input placeholder="Please enter user name" />
               </Form.Item>
@@ -77,7 +86,9 @@ const CreateUser = (
               <Form.Item
                 name="lastName"
                 label="Last Name"
-                rules={[{ required: true, message: 'Please enter user last name' }]}
+                rules={[
+                  { required: true, message: 'Please enter user last name' },
+                ]}
               >
                 <Input placeholder="Please enter user name" />
               </Form.Item>
@@ -88,7 +99,13 @@ const CreateUser = (
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, type: 'email', message: 'Please enter user email' }]}
+                rules={[
+                  {
+                    required: true,
+                    type: 'email',
+                    message: 'Please enter user email',
+                  },
+                ]}
               >
                 <Input placeholder="Please enter user email" />
               </Form.Item>
@@ -99,7 +116,8 @@ const CreateUser = (
                 label="Role"
                 rules={[{ required: true, message: 'Please choose the role' }]}
               >
-                <Select placeholder="Please select an owner" 
+                <Select
+                  placeholder="Please select an owner"
                   options={RoleOptions}
                 />
               </Form.Item>
@@ -110,7 +128,9 @@ const CreateUser = (
               <Form.Item
                 name="password"
                 label="Password"
-                rules={[{ required: true, message: 'Please enter user password' }]}
+                rules={[
+                  { required: true, message: 'Please enter user password' },
+                ]}
               >
                 <Input.Password placeholder="Please enter user password" />
               </Form.Item>

@@ -30,7 +30,7 @@
     "zustand": "^4.5.2"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.tsx": [
       "npm run format:fix",
       "npm run lint:fix"
     ]

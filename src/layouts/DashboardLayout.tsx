@@ -1,10 +1,10 @@
-import { Outlet, useLocation } from "react-router-dom";
-import { useAuthStore } from "../zustand/store";
-import { Button, Layout, Menu, theme } from "antd";
-import { useMemo, useState } from "react";
-import navConfig, { navBarItems } from "./nev-item";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import AccountPopup from "../components/AccountPopup";
+import { Outlet, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../zustand/store';
+import { Button, Layout, Menu, theme } from 'antd';
+import { useMemo, useState } from 'react';
+import navConfig, { navBarItems } from './nev-item';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import AccountPopup from '../components/AccountPopup';
 
 const { Sider, Header, Content } = Layout;
 
@@ -19,18 +19,22 @@ const DashboardLayout = () => {
 
   const navbarConfig = useMemo(() => {
     const config = navConfig.filter((nav) =>
-      nav.allowed.includes(user?.role as string)
+      nav.allowed.includes(user?.role as string),
     );
     return config;
   }, [user]);
 
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={[ navBarItems.includes(`/${location.pathname?.split('/')?.[1]}`) ? location.pathname : '/']}
+          defaultSelectedKeys={[
+            navBarItems.includes(`/${location.pathname?.split('/')?.[1]}`)
+              ? location.pathname
+              : '/',
+          ]}
           items={navbarConfig}
         />
       </Sider>
@@ -39,8 +43,8 @@ const DashboardLayout = () => {
           style={{
             padding: 0,
             background: colorBgContainer,
-            display: "flex",
-            justifyContent: "space-between",
+            display: 'flex',
+            justifyContent: 'space-between',
           }}
         >
           <Button
@@ -48,7 +52,7 @@ const DashboardLayout = () => {
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: "16px",
+              fontSize: '16px',
               width: 64,
               height: 64,
             }}

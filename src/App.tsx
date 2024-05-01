@@ -1,9 +1,8 @@
-
 import 'antd/dist/reset.css';
-import { RouterProvider } from 'react-router-dom'
-import { SnackbarProvider } from 'notistack'
+import { RouterProvider } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 
-import { router } from './router/router.tsx'
+import { router } from './router/router.tsx';
 import ThemeProvider from './providers/ThemeProvider.tsx';
 import ReactQueryProvider from './providers/ReactQueryProvider.tsx';
 
@@ -21,7 +20,7 @@ function App() {
         </SnackbarProvider>
       </ReactQueryProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

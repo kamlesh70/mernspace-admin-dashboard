@@ -1,8 +1,8 @@
 export type LoginFieldType = {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 };
 
 export type ReactChildren = {
-    children: React.ReactNode | undefined;
-}
+  children: React.ReactNode | undefined;
+};

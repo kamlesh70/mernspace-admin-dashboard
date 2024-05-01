@@ -16,5 +16,8 @@ export const APP_PATHS = {
     },
     products: {
         root: '/products'
+    },
+    restaurants: {
+        root: '/restaurants',
     }
 }

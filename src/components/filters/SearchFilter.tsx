@@ -4,10 +4,10 @@ import { Roles } from "../../constants";
 
 type Props = {
   forTable: string[];
-  statusOptions: any;
-  onSearch: (value: string) => void;
-  onRoleChange? : (value: string) => void;
-  onStatusChange? : (value: string) => void;
+  statusOptions?: any;
+  onSearch: (value: string | null) => void;
+  onRoleChange? : (value: string | null) => void;
+  onStatusChange? : (value: string | null) => void;
   onCreateNew : () => void;
 }
 
@@ -52,10 +52,14 @@ function SearchFilter(
       <Row justify="space-between">
         <Row gutter={20}>
           <Col>
-            <Input.Search onChange={(e: any) => onSearch(e?.target?.value)} placeholder="Search" allowClear/>
+            <Input.Search 
+              onChange={(e: any) => onSearch(e?.target?.value)}
+              placeholder="Search" 
+              allowClear
+            />
           </Col>
           { 
-            forTable.includes('usersList') && onRoleChange &&
+            onRoleChange &&
             <Col>
               <Select
                 onSelect={(value) => onRoleChange(value)}
@@ -63,6 +67,7 @@ function SearchFilter(
                 style={{ width: 120 }}
                 allowClear
                 options={RoleOptions}
+                onClear={() => onRoleChange(null)}
               />
             </Col>
           }
@@ -73,6 +78,7 @@ function SearchFilter(
               allowClear
               options={statusOptions}
               onSelect={(value) => onStatusChange(value)}
+              onClear={() => onStatusChange(null)}
             />
           </Col>
             : <></>
@@ -81,7 +87,7 @@ function SearchFilter(
         <Col>
           <Button 
             onClick={onCreateNew}
-            type='primary' icon={<PlusOutlined />} >Create User</Button>
+            type='primary' icon={<PlusOutlined />} >Create {forTable}</Button>
         </Col>
       </Row>
     </Card>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import { useAuthStore } from '../zustand/store';
+import { AUTH_SERVICE } from './api/auth.api';
 
 const apiClient = axios.create({
   baseURL: config.BACKEND_BASE_URL,
@@ -9,7 +10,7 @@ const apiClient = axios.create({
 
 const refreshToken = async () => {
   await axios.post(
-    `${config.BACKEND_BASE_URL}/auth/refreshToken`,
+    `${config.BACKEND_BASE_URL}${AUTH_SERVICE}/auth/refreshToken`,
     {},
     {
       withCredentials: true,

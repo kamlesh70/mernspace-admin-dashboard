@@ -1,7 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import { useAuthStore } from '../zustand/store';
-import { AUTH_SERVICE } from './api/auth.api';
+import { AUTH_SERVICE } from './constant';
 
 const apiClient = axios.create({
   baseURL: config.BACKEND_BASE_URL,

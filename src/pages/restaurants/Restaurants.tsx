@@ -29,31 +29,44 @@ const columns = [
 function Restaurants() {
   const [search, setSearch] = useState<string | null>(null);
   const [createRestaurant, setCreateRestaurant] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(5);
+  const [tenants, setTenants] = useState<any | null>(null);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const getTenantsData = async () => {
-    return await getTenants();
+  const getTenantsData = async (page: number, limit: number) => {
+    return await getTenants(page, limit);
   };
 
-  const { data: tenants } = useQuery({
-    queryKey: ['users'],
+  const { refetch } = useQuery({
+    queryKey: ['tenants'],
     queryFn: async () => {
-      const response = await getTenantsData();
+      const response = await getTenantsData(page, limit);
       console.log(response);
       return response?.data;
     },
     retry: false,
+    enabled: false,
   });
 
   useEffect(() => {
-    // TODO: create a query for these search fields and make a request to the user list
-  }, [search]);
+    (async () => {
+      const data = await refetch();
+      setTenants(data?.data);
+      console.log('calling =====', data?.data);
+    })();
+  }, [page, limit, search]);
 
   const onCreateNewHandler = () => {
     setCreateRestaurant(true);
+  };
+
+  const onPageChange = (page: number, pageSize: number) => {
+    console.log(page, pageSize);
+    setPage(page);
   };
 
   return (
@@ -76,7 +89,16 @@ function Restaurants() {
           borderRadius: borderRadiusLG,
         }}
       >
-        <Table dataSource={tenants} columns={columns} rowKey={'id'} />
+        <Table
+          pagination={{
+            pageSize: limit,
+            onChange: onPageChange,
+            total: tenants?.tenantCount,
+          }}
+          dataSource={tenants?.tenants}
+          columns={columns}
+          rowKey={'id'}
+        />
       </div>
     </>
   );

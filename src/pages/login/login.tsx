@@ -16,6 +16,7 @@ import { login, logout, self } from '../../http/api/auth.api';
 import { useAuthStore } from '../../zustand/store';
 import useHasPermission from '../../hooks/useHasPermission';
 import { enqueueSnackbar } from 'notistack';
+import Logo from '../../components/Logo';
 
 const LoginPage = () => {
   const { setUser, logout: logoutStore } = useAuthStore();
@@ -74,12 +75,21 @@ const LoginPage = () => {
           <Space
             style={{
               width: '100%',
-              fontSize: 16,
-              justifyContent: 'center',
+              padding: '1rem',
+              flexDirection: 'column',
             }}
           >
-            <LockFilled />
-            Sign In
+            <Logo width={70} height={70} />
+            <Space
+              style={{
+                width: '100%',
+                fontSize: 16,
+                justifyContent: 'center',
+              }}
+            >
+              <LockFilled />
+              Sign In
+            </Space>
           </Space>
         }
         bordered={false}

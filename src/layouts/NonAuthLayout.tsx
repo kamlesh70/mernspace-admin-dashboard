@@ -12,7 +12,6 @@ const NonAuthLayout = () => {
 
   return (
     <div>
-      <h1>This is Non Auth layout</h1>
       <Outlet />
     </div>
   );

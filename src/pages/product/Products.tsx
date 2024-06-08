@@ -23,7 +23,7 @@ const columns = [
     key: 'description',
   },
   {
-    title: 'isPublish',
+    title: 'Publish',
     dataIndex: 'isPublish',
     key: 'isPublish',
     render: (isPublish: boolean) => {
@@ -46,50 +46,44 @@ const columns = [
   },
 ];
 
-const statusOptions = [
-  {
-    value: 'Active',
-    label: 'active',
-  },
-  {
-    value: 'Inactive',
-    label: 'inactive',
-  },
-  {
-    value: 'Ban',
-    label: 'ban',
-  },
-];
-
 function Products() {
   const [search, setSearch] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(5);
+  const [products, setProducts] = useState<any | null>(null);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const getProducts = async () => {
-    return await getProductList();
+  const getProducts = async (page: number, limit: number) => {
+    return await getProductList(page, limit);
   };
 
-  const { data: products } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
-      const response = await getProducts();
-      console.log(response, 'responsssssssssssss');
+      const response = await getProducts(page, limit);
       return response?.data;
     },
     retry: false,
+    enabled: false,
   });
 
-  useEffect(() => {
-    // TODO: create a query for these search fields and make a request to the user list
-    console.log(search, 'search', role, 'role', status, 'status');
-  }, [search, role, status]);
-
   const onCreateNewHandler = () => {};
+
+  useEffect(() => {
+    (async () => {
+      const data = await refetch();
+      setProducts(data?.data);
+      console.log('calling =====', data?.data);
+    })();
+  }, [page, limit, search]);
+
+  const onPageChange = (page: number, pageSize: number) => {
+    console.log(page, pageSize);
+    setPage(page);
+  };
 
   return (
     <>
@@ -99,10 +93,7 @@ function Products() {
       </Breadcrumb>
       <SearchFilter
         forTable={['Product']}
-        statusOptions={statusOptions}
         onSearch={setSearch}
-        onRoleChange={setRole}
-        onStatusChange={setStatus}
         onCreateNew={onCreateNewHandler}
       />
       <div
@@ -113,7 +104,18 @@ function Products() {
           borderRadius: borderRadiusLG,
         }}
       >
-        <Table dataSource={products} columns={columns} rowKey={'id'} />
+        <Table
+          pagination={{
+            pageSize: limit,
+            onChange: onPageChange,
+            total: products?.productCount,
+          }}
+          size="middle"
+          scroll={{ scrollToFirstRowOnChange: true }}
+          dataSource={products?.products}
+          columns={columns}
+          rowKey={'id'}
+        />
       </div>
     </>
   );

@@ -54,32 +54,43 @@ function Users() {
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [createUser, setCreateUser] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(5);
+  const [users, setUsers] = useState<any | null>(null);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const getUsers = async () => {
-    return await getUsersList();
+  const getUsers = async (page: number, limit: number) => {
+    return await getUsersList(page, limit);
   };
 
-  const { data: users } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await getUsers();
+      const response = await getUsers(page, limit);
       console.log(response);
       return response?.data;
     },
     retry: false,
+    enabled: false,
   });
 
   useEffect(() => {
-    // TODO: create a query for these search fields and make a request to the user list
-    console.log(search, 'search', role, 'role', status, 'status');
-  }, [search, role, status]);
+    (async () => {
+      const data = await refetch();
+      setUsers(data?.data);
+      console.log('calling =====', data?.data);
+    })();
+  }, [page, limit, search, role, status]);
 
   const onCreateNewHandler = () => {
     setCreateUser(true);
+  };
+
+  const onPageChange = (page: number) => {
+    setPage(page);
   };
 
   return (
@@ -105,7 +116,16 @@ function Users() {
           borderRadius: borderRadiusLG,
         }}
       >
-        <Table dataSource={users} columns={columns} rowKey={'id'} />
+        <Table
+          pagination={{
+            pageSize: limit,
+            onChange: onPageChange,
+            total: users?.userCount,
+          }}
+          dataSource={users?.users}
+          columns={columns}
+          rowKey={'id'}
+        />
       </div>
     </>
   );

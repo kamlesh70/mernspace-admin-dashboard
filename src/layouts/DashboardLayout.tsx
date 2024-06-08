@@ -1,14 +1,16 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../zustand/store';
 import { Button, Layout, Menu, theme } from 'antd';
 import { useMemo, useState } from 'react';
 import navConfig, { navBarItems } from './nev-item';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import AccountPopup from '../components/AccountPopup';
+import Logo from '../components/Logo';
 
 const { Sider, Header, Content } = Layout;
 
 const DashboardLayout = () => {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
@@ -27,6 +29,17 @@ const DashboardLayout = () => {
   return (
     <Layout style={{ height: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate({ pathname: '/' })}
+        >
+          <Logo width={70} height={70} />
+        </div>
         <Menu
           theme="dark"
           mode="inline"

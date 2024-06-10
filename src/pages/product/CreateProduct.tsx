@@ -10,32 +10,20 @@ import {
   Space,
   theme,
 } from 'antd';
-import { Roles } from '../../constants';
 import { createUser } from '../../http/api/user.api';
+import { useEffect, useMemo, useState } from 'react';
+import { getCategoryList } from '../../http/api/category.api';
 
 type Props = {
   open: boolean;
   setOpen: (value: boolean) => void;
 };
 
-const RoleOptions = [
-  {
-    label: 'Admin',
-    value: Roles.ADMIN,
-  },
-  {
-    label: 'Manager',
-    value: Roles.MANAGER,
-  },
-  {
-    label: 'Customer',
-    value: Roles.CUSTOMER,
-  },
-];
-
-const CreateUser = ({ open, setOpen }: Props) => {
+const CreateRestaurant = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [categories, setCategories] = useState<any | null>(null);
+  console.log(categories, 'categories =========');
 
   const {
     token: { colorBgLayout },
@@ -71,6 +59,31 @@ const CreateUser = ({ open, setOpen }: Props) => {
     }
   };
 
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  const getCategory = async () => {
+    try {
+      const response = await getCategoryList();
+      setCategories(response?.data?.categories);
+    } catch (error: any) {
+      messageApi.open({
+        type: 'error',
+        content: error?.message,
+      });
+    }
+  };
+
+  const CategoryOptions = useMemo(() => {
+    return categories?.map((category: any) => {
+      return {
+        label: category?.name,
+        value: category?._id,
+      };
+    });
+  }, [categories]);
+
   return (
     <>
       {contextHolder}
@@ -98,24 +111,28 @@ const CreateUser = ({ open, setOpen }: Props) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="firstName"
-                label="First Name"
+                name="name"
+                label="Product Name"
                 rules={[
-                  { required: true, message: 'Please enter user first name' },
+                  { required: true, message: 'Please enter product name' },
                 ]}
               >
-                <Input placeholder="Please enter user name" />
+                <Input placeholder="Please enter product name" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="lastName"
-                label="Last Name"
+                name="role"
+                label="Role"
                 rules={[
-                  { required: true, message: 'Please enter user last name' },
+                  { required: true, message: 'Please choose the category' },
                 ]}
               >
-                <Input placeholder="Please enter user name" />
+                <Select
+                  placeholder="Please select an category"
+                  options={CategoryOptions}
+                  onChange={(e) => console.log(e)}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -133,18 +150,6 @@ const CreateUser = ({ open, setOpen }: Props) => {
                 ]}
               >
                 <Input placeholder="Please enter user email" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="role"
-                label="Role"
-                rules={[{ required: true, message: 'Please choose the role' }]}
-              >
-                <Select
-                  placeholder="Please select an owner"
-                  options={RoleOptions}
-                />
               </Form.Item>
             </Col>
           </Row>
@@ -167,4 +172,4 @@ const CreateUser = ({ open, setOpen }: Props) => {
   );
 };
 
-export default CreateUser;
+export default CreateRestaurant;

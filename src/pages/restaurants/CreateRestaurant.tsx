@@ -4,35 +4,21 @@ import {
   Drawer,
   Form,
   Input,
+  message,
   Row,
-  Select,
   Space,
   theme,
 } from 'antd';
-import { Roles } from '../../constants';
+import { createTenant } from '../../http/api/tenant.api';
 
 type Props = {
   open: boolean;
   setOpen: (value: boolean) => void;
 };
 
-const RoleOptions = [
-  {
-    label: 'Admin',
-    value: Roles.ADMIN,
-  },
-  {
-    label: 'Manager',
-    value: Roles.MANAGER,
-  },
-  {
-    label: 'Customer',
-    value: Roles.CUSTOMER,
-  },
-];
-
 const CreateRestaurant = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const {
     token: { colorBgLayout },
@@ -43,14 +29,36 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
     form.resetFields();
   };
 
-  const onFinish = (data: any) => {
-    console.log(data);
+  const onFinish = async () => {
+    try {
+      try {
+        await form.validateFields();
+      } catch (error) {
+        return;
+      }
+      const data = form.getFieldsValue();
+      console.log(data);
+      await createTenant(data);
+      messageApi.open({
+        type: 'success',
+        content: 'User created successfully !',
+      });
+      setOpen(false);
+      form.resetFields();
+    } catch (error: any) {
+      console.log(error);
+      messageApi.open({
+        type: 'error',
+        content: error?.message || 'Failed to create user !',
+      });
+    }
   };
 
   return (
     <>
+      {contextHolder}
       <Drawer
-        title="Create a new User"
+        title="Create a new Restaurant"
         width={720}
         onClose={onClose}
         open={open}
@@ -63,76 +71,44 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
         extra={
           <Space>
             <Button onClick={onClose}>Cancel</Button>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" onClick={onFinish}>
               Submit
             </Button>
           </Space>
         }
       >
-        <Form layout="vertical" onFinish={onFinish} form={form}>
-          <Row gutter={16}>
-            <Col span={12}>
+        <Form layout="vertical" form={form}>
+          <Row>
+            <Col span={20}>
               <Form.Item
-                name="firstName"
-                label="First Name"
-                rules={[
-                  { required: true, message: 'Please enter user first name' },
-                ]}
-              >
-                <Input placeholder="Please enter user name" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="lastName"
-                label="Last Name"
-                rules={[
-                  { required: true, message: 'Please enter user last name' },
-                ]}
-              >
-                <Input placeholder="Please enter user name" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="email"
-                label="Email"
+                name="name"
+                label="Name"
                 rules={[
                   {
                     required: true,
-                    type: 'email',
-                    message: 'Please enter user email',
+                    message: 'Please enter restaurant name',
+                    max: 30,
                   },
                 ]}
               >
-                <Input placeholder="Please enter user email" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="role"
-                label="Role"
-                rules={[{ required: true, message: 'Please choose the role' }]}
-              >
-                <Select
-                  placeholder="Please select an owner"
-                  options={RoleOptions}
-                />
+                <Input placeholder="Please enter user name" />
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
-            <Col span={12}>
+          <Row>
+            <Col span={20}>
               <Form.Item
-                name="password"
-                label="Password"
+                name="address"
+                label="Address"
                 rules={[
-                  { required: true, message: 'Please enter user password' },
+                  {
+                    required: true,
+                    message: 'Please enter restaurant address',
+                    max: 50,
+                  },
                 ]}
               >
-                <Input.Password placeholder="Please enter user password" />
+                <Input.TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>

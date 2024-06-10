@@ -83,7 +83,7 @@ function Users() {
       setUsers(data?.data);
       console.log('calling =====', data?.data);
     })();
-  }, [page, limit, search, role, status]);
+  }, [page, limit, search, role, status, open]);
 
   const onCreateNewHandler = () => {
     setCreateUser(true);

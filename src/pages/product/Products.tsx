@@ -5,6 +5,7 @@ import SearchFilter from '../../components/filters/SearchFilter';
 import { useEffect, useState } from 'react';
 import { formatDate } from '../../utils/dateFormatter';
 import { getProductList } from '../../http/api/product.api';
+import CreateRestaurant from './CreateProduct';
 
 const columns = [
   {
@@ -51,6 +52,7 @@ function Products() {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(5);
   const [products, setProducts] = useState<any | null>(null);
+  const [createProduct, setCreateProduct] = useState<boolean>(false);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -70,7 +72,9 @@ function Products() {
     enabled: false,
   });
 
-  const onCreateNewHandler = () => {};
+  const onCreateNewHandler = () => {
+    setCreateProduct(true);
+  };
 
   useEffect(() => {
     (async () => {
@@ -78,7 +82,7 @@ function Products() {
       setProducts(data?.data);
       console.log('calling =====', data?.data);
     })();
-  }, [page, limit, search]);
+  }, [page, limit, search, createProduct]);
 
   const onPageChange = (page: number, pageSize: number) => {
     console.log(page, pageSize);
@@ -87,6 +91,7 @@ function Products() {
 
   return (
     <>
+      <CreateRestaurant open={createProduct} setOpen={setCreateProduct} />
       <Breadcrumb separator={<RightOutlined />} style={{ margin: '16px' }}>
         <Breadcrumb.Item>Home</Breadcrumb.Item>
         <Breadcrumb.Item>Products</Breadcrumb.Item>
@@ -110,7 +115,6 @@ function Products() {
             onChange: onPageChange,
             total: products?.productCount,
           }}
-          size="middle"
           scroll={{ scrollToFirstRowOnChange: true }}
           dataSource={products?.products}
           columns={columns}

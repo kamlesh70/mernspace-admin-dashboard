@@ -58,7 +58,7 @@ function Restaurants() {
       setTenants(data?.data);
       console.log('calling =====', data?.data);
     })();
-  }, [page, limit, search]);
+  }, [page, limit, search, createRestaurant]);
 
   const onCreateNewHandler = () => {
     setCreateRestaurant(true);

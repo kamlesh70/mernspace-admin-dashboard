@@ -5,5 +5,4 @@ import { CATALOG_SERVICE } from '../constant';
 export const getCategoryList = () => {
   const cb = () => apiClient.get(`${CATALOG_SERVICE}/category/list`);
   return apiErrorHandler(cb, 'Failed to fetch category list !');
-}
-
+};

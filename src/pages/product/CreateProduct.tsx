@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Col,
   Drawer,
   Form,
@@ -8,11 +9,15 @@ import {
   Row,
   Select,
   Space,
+  Switch,
   theme,
 } from 'antd';
-import { createUser } from '../../http/api/user.api';
 import { useEffect, useMemo, useState } from 'react';
 import { getCategoryList } from '../../http/api/category.api';
+import UploadImage from '../../components/UploadImage';
+import { getTenants } from '../../http/api/tenant.api';
+import PriceConfiguration from './PriceConfiguration';
+import Attributes from './Attributes';
 
 type Props = {
   open: boolean;
@@ -23,6 +28,8 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [categories, setCategories] = useState<any | null>(null);
+  const [tenants, setTenants] = useState<any | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<any | null>(null);
   console.log(categories, 'categories =========');
 
   const {
@@ -31,6 +38,7 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
 
   const onClose = () => {
     setOpen(false);
+    setSelectedCategory(null);
     form.resetFields();
   };
 
@@ -43,7 +51,6 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
       }
       const data = form.getFieldsValue();
       console.log(data);
-      await createUser({ ...data, createdByAdmin: true });
       messageApi.open({
         type: 'success',
         content: 'User created successfully !',
@@ -61,6 +68,7 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
 
   useEffect(() => {
     getCategory();
+    getTenantsList();
   }, []);
 
   const getCategory = async () => {
@@ -83,6 +91,35 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
       };
     });
   }, [categories]);
+
+  const getTenantsList = async () => {
+    try {
+      const response = await getTenants(1, 100);
+      setTenants(response?.data?.tenants);
+    } catch (error: any) {
+      messageApi.open({
+        type: 'error',
+        content: error?.message,
+      });
+    }
+  };
+
+  const TenantOptions = useMemo(() => {
+    return tenants?.map((category: any) => {
+      return {
+        label: category?.name,
+        value: category?.id,
+      };
+    });
+  }, [tenants]);
+
+  const handleSelectCategory = (value: any) => {
+    const category = categories.find((c: any) => c?._id === value);
+    console.log(category, value, categories);
+    if (category) {
+      setSelectedCategory(category);
+    }
+  };
 
   return (
     <>
@@ -108,64 +145,103 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
         }
       >
         <Form layout="vertical" form={form}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Product Name"
-                rules={[
-                  { required: true, message: 'Please enter product name' },
-                ]}
-              >
-                <Input placeholder="Please enter product name" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="role"
-                label="Role"
-                rules={[
-                  { required: true, message: 'Please choose the category' },
-                ]}
-              >
-                <Select
-                  placeholder="Please select an category"
-                  options={CategoryOptions}
-                  onChange={(e) => console.log(e)}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  {
-                    required: true,
-                    type: 'email',
-                    message: 'Please enter user email',
-                  },
-                ]}
-              >
-                <Input placeholder="Please enter user email" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="password"
-                label="Password"
-                rules={[
-                  { required: true, message: 'Please enter user password' },
-                ]}
-              >
-                <Input.Password placeholder="Please enter user password" />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Card title="Product Info" style={{ marginBottom: '20px' }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="name"
+                  label="Product Name"
+                  rules={[
+                    { required: true, message: 'Please enter product name' },
+                  ]}
+                >
+                  <Input
+                    placeholder="Please enter product name"
+                    maxLength={30}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="category"
+                  label="Category"
+                  rules={[
+                    { required: true, message: 'Please choose the category' },
+                  ]}
+                >
+                  <Select
+                    placeholder="Please select an category"
+                    options={CategoryOptions}
+                    onChange={handleSelectCategory}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <Form.Item
+                  name="description"
+                  label="Description"
+                  rules={[
+                    { required: true, message: 'Please enter description' },
+                  ]}
+                >
+                  <Input.TextArea
+                    rows={2}
+                    style={{ resize: 'none' }}
+                    maxLength={100}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+          <Card title="Product image" style={{ marginBottom: '20px' }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <UploadImage />
+              </Col>
+            </Row>
+          </Card>
+
+          {selectedCategory && selectedCategory?.priceConfiguration && (
+            <Card title="Price Configuration" style={{ marginBottom: '20px' }}>
+              <PriceConfiguration data={selectedCategory?.priceConfiguration} />
+            </Card>
+          )}
+          {selectedCategory && selectedCategory?.attributes && (
+            <Card title="Attributes" style={{ marginBottom: '20px' }}>
+              <Attributes data={selectedCategory?.attributes} />
+            </Card>
+          )}
+
+          <Card title="Tenant Info" style={{ marginBottom: '20px' }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="tenantId"
+                  label="tenant"
+                  rules={[
+                    { required: true, message: 'Please choose the tenant' },
+                  ]}
+                >
+                  <Select
+                    placeholder="Please select an tenant"
+                    options={TenantOptions}
+                    onChange={(e) => console.log(e)}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+          <Card title="Additional Info">
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="isPublish" label="Publish" initialValue={true}>
+                  <Switch checkedChildren="Yes" unCheckedChildren="No" />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
         </Form>
       </Drawer>
     </>

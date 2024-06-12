@@ -18,6 +18,8 @@ import UploadImage from '../../components/UploadImage';
 import { getTenants } from '../../http/api/tenant.api';
 import PriceConfiguration from './PriceConfiguration';
 import Attributes from './Attributes';
+import { createProduct } from '../../http/api/product.api';
+import { IAttribute } from './types';
 
 type Props = {
   open: boolean;
@@ -51,6 +53,53 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
       }
       const data = form.getFieldsValue();
       console.log(data);
+
+      const payload: any = {
+        name: data?.name,
+        categoryId: data?.category,
+        description: data?.description,
+        isPublish: data?.isPublish,
+        tenantId: data?.tenantId + '',
+        image:
+          'https://mern-outlet-project.s3.ap-south-1.amazonaws.com/product_6e610bbe-a7f6-4824-a48f-45d628e4a665',
+        priceConfigurations: JSON.parse(
+          JSON.stringify(selectedCategory?.priceConfigurations),
+        ),
+        attributes: [],
+      };
+
+      const priceConfigurations = selectedCategory?.priceConfigurations;
+      Object.entries(priceConfigurations).forEach(
+        ([key, value]: [string, any]) => {
+          const objString: string = `priceConfigurations.${key}.availableOptions.`;
+          payload.priceConfigurations[key]['availableOptions'] = {};
+          if (payload?.priceConfigurations[key]?._id) {
+            delete payload?.priceConfigurations[key]?._id;
+          }
+          console.log(value);
+          value?.availableOptions?.forEach((option: string) => {
+            console.log(`${objString}${option}`, 'objString');
+            payload.priceConfigurations[key]['availableOptions'][option] =
+              +data[`${objString}${option}`];
+          });
+        },
+      );
+
+      selectedCategory?.attributes?.forEach((element: IAttribute) => {
+        const objString = `attributes.${element?.name}`;
+        payload.attributes.push({
+          name: element?.name,
+          value:
+            data[objString] === true
+              ? 'yes'
+              : data[objString] === false
+                ? 'no'
+                : data[objString],
+        });
+      });
+
+      await createProduct(payload);
+
       messageApi.open({
         type: 'success',
         content: 'User created successfully !',
@@ -203,14 +252,16 @@ const CreateRestaurant = ({ open, setOpen }: Props) => {
             </Row>
           </Card>
 
-          {selectedCategory && selectedCategory?.priceConfiguration && (
+          {selectedCategory && selectedCategory?.priceConfigurations && (
             <Card title="Price Configuration" style={{ marginBottom: '20px' }}>
-              <PriceConfiguration data={selectedCategory?.priceConfiguration} />
+              <PriceConfiguration
+                data={selectedCategory?.priceConfigurations}
+              />
             </Card>
           )}
           {selectedCategory && selectedCategory?.attributes && (
             <Card title="Attributes" style={{ marginBottom: '20px' }}>
-              <Attributes data={selectedCategory?.attributes} />
+              <Attributes data={selectedCategory?.attributes} form={form} />
             </Card>
           )}
 

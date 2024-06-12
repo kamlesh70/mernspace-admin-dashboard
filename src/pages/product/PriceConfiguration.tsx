@@ -11,7 +11,7 @@ function PriceConfiguration({ data }: Props) {
     <>
       {Object.entries(data)?.map(([name, value]: [string, any]) => {
         return (
-          <>
+          <div key={name}>
             <Row style={{ marginBottom: '16px' }}>
               <Col span={24}>
                 <Typography>
@@ -24,7 +24,7 @@ function PriceConfiguration({ data }: Props) {
                 return (
                   <Col span={8}>
                     <Form.Item
-                      name={`price.${name}.${option}`}
+                      name={`priceConfigurations.${name}.availableOptions.${option}`}
                       label={option}
                       rules={[
                         { required: true, message: 'Please enter price' },
@@ -40,7 +40,7 @@ function PriceConfiguration({ data }: Props) {
                 );
               })}
             </Row>
-          </>
+          </div>
         );
       })}
     </>

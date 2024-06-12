@@ -82,7 +82,7 @@ function Products() {
       setProducts(data?.data);
       console.log('calling =====', data?.data);
     })();
-  }, [page, limit, search, createProduct]);
+  }, [page, limit, search, createProduct, createProduct]);
 
   const onPageChange = (page: number, pageSize: number) => {
     console.log(page, pageSize);
